@@ -137,6 +137,14 @@ class ProductTypeForm(forms.ModelForm):
                         'Some products of this type have more than '
                         'one variant.')
                     self.add_error('has_variants', msg)
+
+        # Some variant attributes could be removed so name should be updated
+        # accordingly
+        if self.fields['variant_attributes'].has_changed():
+            variants_to_be_updated = self.instance.products.variants.all()
+            for variant in variants_to_be_updated:
+                variant.name = display_variant_attributes(variant)
+                variant.save()
         return data
 
 
